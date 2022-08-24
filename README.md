@@ -1,5 +1,5 @@
-# luisraimundo-database-essential
+# luisraimundo-PairProgramming
 
-Assignment Clean Code
+Pair Programming assignment
 
-Using the database essential project for clean code assignment
+Pair Programing with a friend for understand more about the XP concepts.
