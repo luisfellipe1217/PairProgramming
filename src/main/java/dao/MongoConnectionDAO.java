@@ -8,18 +8,20 @@ import com.mongodb.MongoClientURI;
 
 public class MongoConnectionDAO {
 
-    public static MongoClient mongoClient;
-    public static DB database;
-    public static String connection = "mongodb://localhost:27017";
-    public static DBCollection users;
+    private MongoClient mongoClient;
+    private DB database;
+    private static final String connection = "mongodb://localhost:27017";
+    private static DBCollection users;
 
-    public boolean connect() {
+    public void connect() throws Exception{
 
-        mongoClient = new com.mongodb.MongoClient(new MongoClientURI(connection));
-        database = mongoClient.getDB("Assignment");
-        users = database.getCollection("users");
-
-        return true;
+        try {
+            mongoClient = new com.mongodb.MongoClient(new MongoClientURI(connection));
+            database = mongoClient.getDB("Assignment");
+            users = database.getCollection("users");
+        }catch (Exception e){
+            throw new Exception("Not connected!");
+        }
     }
 
     public DBCollection getUsers() {
