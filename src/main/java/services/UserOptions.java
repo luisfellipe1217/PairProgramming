@@ -11,8 +11,13 @@ import static util.Console.consoleScanner;
 public class UserOptions {
 
     private User user;
+    private final DbActions dbManager;
 
-    public void registerUser(MongoConnectionDAO connection, DbActions dbManager, String name, int id, int function) {
+    public UserOptions(){
+        this.dbManager = new DbActions();
+    }
+
+    public void registerUser(String name, Integer id, Integer function) {
 
         if (function == 1){
             user = UserBuilder.anUser().userId(id).userName(name).isAEmployee().finalUser();
@@ -20,18 +25,17 @@ public class UserOptions {
             user = UserBuilder.anUser().userId(id).userName(name).isAManager().finalUser();
         }
 
-        dbManager.insertObject(user.getId(), user.getName(), user.getFunction(), user.getSalary(), connection);
-        dbManager.printObject(user.getId(), connection);
+        dbManager.insertObject(user.getId(), user.getName(), user.getFunction(), user.getSalary());
+        dbManager.printObject(user.getId());
     }
 
-    public void findUser(MongoConnectionDAO connection, DbActions dbManager, int cod) {
+    public void findUser(Integer cod) {
 
-        String user = dbManager.findObject(cod, connection).one().toString();
+        String user = String.valueOf(dbManager.findObject(cod).one());
         System.out.println("The user is:" + user);
     }
 
-    public void printUser(MongoConnectionDAO connection, DbActions dbManager, int cod) {
-
-        dbManager.printObject(cod, connection);
+    public void printUser(Integer cod) {
+        dbManager.printObject(cod);
     }
 }

@@ -11,38 +11,40 @@ import org.hamcrest.Matchers;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
+import java.util.Objects;
+
 
 @FixMethodOrder(MethodSorters.JVM)
 public class IntegrationTest {
 
-    private static User userTest = UserBuilder.anUser().userId(1).userName("Teste").isAManager().finalUser();
+    private static final User userTest = UserBuilder.anUser().userId(1).userName("Teste").isAManager().finalUser();
 
-    private static MongoConnectionDAO connection = new MongoConnectionDAO();
-    private static DbActions dbActions = new DbActions();
+    private static final MongoConnectionDAO connection = new MongoConnectionDAO();
+    private static final DbActions dbActions = new DbActions(connection);
 
 
 
     @Test
     public void insertObjectTest() {
 
-        dbActions.insertObject(userTest.getId(), userTest.getName(), userTest.getFunction(), userTest.getSalary(), connection);
+        dbActions.insertObject(userTest.getId(), userTest.getName(), userTest.getFunction(), userTest.getSalary());
         DBObject query = new BasicDBObject("cod", userTest.getId());
-        DBCursor cursor = connection.getUsers().find(query);
 
-        Assert.assertThat(cursor.one().toString(), Matchers.containsString(userTest.getName()));
+        try (DBCursor cursor = connection.getUsers().find(query)) {
+            Assert.assertThat(Objects.requireNonNull(cursor.one()).toString(), Matchers.containsString(userTest.getName()));
+        }
     }
 
     @Test
     public void findObjectTest(){
 
-        String user = dbActions.findObject(userTest.getId(), connection).one().toString();
+        String user = String.valueOf(dbActions.findObject(userTest.getId()).one());
 
        Assert.assertThat(user, Matchers.containsString(userTest.getName()));
     }
 
     @AfterClass
     public static void tearDown() {
-        connection.connect();
         DBObject query = new BasicDBObject("cod", userTest.getId());
         connection.getUsers().remove(query);
 
